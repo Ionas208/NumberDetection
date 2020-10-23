@@ -12,10 +12,9 @@ class NeuralNetwork:
         self.weights = []
         self.biases = []
 
-        activations = []
-        for pixel in image:
-            activations.append(self.sigmoid(pixel))
-        self.activations.append(np.array(activations))
+        image = self.sigmoid(np.array(image))
+        image = np.reshape(image,(784, 1))
+        self.activations.append(image)
 
         
     def sigmoid(self, x):
@@ -27,7 +26,8 @@ class NeuralNetwork:
         layer_weights = []
         for i in range(layer_size):
             node_weights = []
-            for j in range(len(self.activations[len(self.activations)-1])):
+            num_prev_nodes = len(self.activations[len(self.activations)-1])
+            for j in range(num_prev_nodes):
                 node_weights.append(uniform(-1,1))
             layer_weights.append(node_weights)
 
@@ -40,20 +40,28 @@ class NeuralNetwork:
             layer_biases.append(1)
 
         layer_biases = np.array(layer_biases)
+        layer_biases = np.reshape(layer_biases, (layer_size, 1))
         self.biases.append(layer_biases)
 
-        #Calculate activations
         prev_activations = np.array(self.activations[len(self.activations)-1])
 
         # Calculate activations with follwing formula:
         # sigmoid(weights * activations + biases)
-        
-        print(f'{layer_weights.shape} * {layer_biases.shape}')
         layer_activations = np.array(layer_weights.dot(prev_activations))
-        layer_activations = np.add(layer_activations, layer_biases)
-        layer_activations = self.sigmoid(layer_activations)
-
+        layer_activations += layer_biases
+        layer_activations = self.sigmoid(np.array(layer_activations))
+        
         self.activations.append(layer_activations)
+
+
+    def get_result(self):
+        output_activations = self.activations[len(self.activations)-1]
+        confidence = max(output_activations)
+        for i in range(len(output_activations)):
+            if output_activations[i] == confidence:
+                return (i, confidence.item())
+        raise Exception('No Number found')
+        
 
     
 
@@ -67,3 +75,4 @@ nn = NeuralNetwork(images[0])
 nn.initialize_layer(16)
 nn.initialize_layer(16)
 nn.initialize_layer(10)
+print(nn.get_result())
