@@ -8,3 +8,6 @@ If you have conda, you can install the requirements via conda
 
 If you only use python, you can install the requirements via pip
 ``pip install -r requirements.txt``
+
+## Execution
+Simply run ``python draw.py`` and you're good to go!
